@@ -14,7 +14,7 @@ class NotesRepository {
         noteDao.addNote(note)
     }
 
-    suspend fun updateItem(updateNote: Note) {
+    suspend fun updateNote(updateNote: Note) {
         noteDao.updateNote(updateNote)
     }
 

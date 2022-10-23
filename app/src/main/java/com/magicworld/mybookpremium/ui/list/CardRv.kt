@@ -11,7 +11,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.magicworld.mybookpremium.model.Note
@@ -25,7 +24,8 @@ fun MyCard(note: Note , onItemSelected: () -> Unit) {
             .clickable { onItemSelected()},
         border = BorderStroke(0.5.dp, Color.LightGray),
         shape = RoundedCornerShape(8),
-        elevation = 4.dp
+        elevation = 4.dp,
+        backgroundColor = Color(note.color)
     ) {
         Column(Modifier.padding(16.dp)) {
             Text(

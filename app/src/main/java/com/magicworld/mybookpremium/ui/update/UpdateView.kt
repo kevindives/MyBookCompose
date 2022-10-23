@@ -1,12 +1,9 @@
 package com.magicworld.mybookpremium.ui.update
 
 import android.app.Activity
-import android.content.Context
-import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
@@ -22,22 +19,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.magicworld.mybookpremium.core.MyDropDownMenu
 import com.magicworld.mybookpremium.core.hideKeyboard
+import com.magicworld.mybookpremium.model.MyColors
 import com.magicworld.mybookpremium.model.Note
 import com.magicworld.mybookpremium.ui.alertdialog.MyAlertDialog
+import com.magicworld.mybookpremium.ui.utils.NoteDescription
+import com.magicworld.mybookpremium.ui.utils.TitleNote
 import com.magicworld.mybookpremium.viewmodel.UpdateViewModel
 
 @Composable
 fun UpdateViewNote(navController: NavHostController, updateViewModel: UpdateViewModel, note: Note) {
+
     Scaffold(
         topBar = {
             TopAppBarUpdateView(navController, updateViewModel, note)
         },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = FabPosition.End,
+        backgroundColor = Color(note.color)
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box {
             BodyUpdate(note, updateViewModel)
         }
     }
@@ -48,24 +50,23 @@ fun UpdateViewNote(navController: NavHostController, updateViewModel: UpdateView
 fun TopAppBarUpdateView(
     navController: NavHostController,
     updateViewModel: UpdateViewModel,
-    note: Note
+    note: Note,
 ) {
-    var show by rememberSaveable { mutableStateOf(false) }
-    val titleUpdate by updateViewModel.titleUpdate.observeAsState(initial = "")
-    val descriptionUpdate by updateViewModel.descriptionUpdate.observeAsState(initial = "")
-    val updateNote = Note(note.id, titleUpdate, descriptionUpdate)
+    val updateNote = getUpdateNote(updateViewModel, note)
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+    var showMenu by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
-    val activity =  LocalContext.current as Activity
+    val activity = LocalContext.current as Activity
 
     TopAppBar(
         title = { Text(text = "") },
-        backgroundColor = Color.White,
+        backgroundColor = Color.Transparent,
         elevation = 0.dp,
         navigationIcon = {
             IconButton(onClick = {
-                updateViewModel.updateItem(updateNote)
+                updateViewModel.updateNote(updateNote)
                 navController.navigateUp()
-                hideKeyboard(context , activity)
+                hideKeyboard(context, activity)
             }
             ) {
                 Icon(Icons.Outlined.ArrowBackIosNew, null, tint = Color.Black)
@@ -73,10 +74,10 @@ fun TopAppBarUpdateView(
             }
         },
         actions = {
-            IconButton(onClick = { }) {
+            IconButton(onClick = { showMenu = true }) {
                 Icon(Icons.Outlined.Palette, null, tint = Color.DarkGray)
             }
-            IconButton(onClick = { show = true }) {
+            IconButton(onClick = { showDialog = true }) {
                 Icon(Icons.Outlined.Delete, null, tint = Color.DarkGray)
             }
         })
@@ -84,14 +85,30 @@ fun TopAppBarUpdateView(
     MyAlertDialog(
         title = "Borrar ${note.title}",
         description = "Estas seguro que quieres borrar ${note.title}",
-        show = show,
-        onDismiss = { show = false }) {
+        show = showDialog,
+        onDismiss = { showDialog = false }) {
         deleteUser(note, updateViewModel, navController)
     }
+
+    MyDropDownMenu(showMenu,
+        onColorSelected = { updateViewModel.saveColor(it) },
+        onDismissMenu = { showMenu = false })
+}
+
+
+@Composable
+fun getUpdateNote(updateViewModel: UpdateViewModel, note: Note): Note {
+
+    val titleUpdate by updateViewModel.titleUpdate.observeAsState(initial = "")
+    val descriptionUpdate by updateViewModel.descriptionUpdate.observeAsState(initial = "")
+    val changedColor by updateViewModel.changedColor.observeAsState(initial = MyColors.White.color)
+    return Note(note.id, titleUpdate, descriptionUpdate, changedColor)
+
 }
 
 @Composable
 fun BodyUpdate(note: Note, updateViewModel: UpdateViewModel) {
+
     var titleUpdate by rememberSaveable { mutableStateOf(note.title) }
     var descriptionUpdate by rememberSaveable { mutableStateOf(note.description) }
 
@@ -102,50 +119,6 @@ fun BodyUpdate(note: Note, updateViewModel: UpdateViewModel) {
         NoteDescription(descriptionUpdate) { descriptionUpdate = it }
     }
 }
-
-@Composable
-fun TitleNote(titleUpdate: String, onTextChanged: (String) -> Unit) {
-    TextField(
-        value = titleUpdate,
-        onValueChange = { onTextChanged(it) },
-        modifier = Modifier
-            .fillMaxWidth(),
-        placeholder = { MyText(text = "Título") },
-        maxLines = 1,
-        singleLine = true,
-        colors = TextFieldDefaults.textFieldColors(
-            placeholderColor = Color(0xFFB2B2B2),
-            backgroundColor = Color.White,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-
-            )
-    )
-}
-
-@Composable
-fun NoteDescription(descriptionUpdate: String, onTextChanged: (String) -> Unit) {
-    TextField(
-        value = descriptionUpdate,
-        onValueChange = { onTextChanged(it) },
-        modifier = Modifier
-            .fillMaxSize(),
-        placeholder = { Text("Note") },
-        colors = TextFieldDefaults.textFieldColors(
-            placeholderColor = Color(0xFFB2B2B2),
-            backgroundColor = Color.White,
-            focusedIndicatorColor = Color.White,
-            unfocusedIndicatorColor = Color.White
-
-        )
-    )
-}
-
-@Composable
-fun MyText(text: String) {
-    Text(text = text, fontSize = 20.sp)
-}
-
 
 fun deleteUser(note: Note, updateViewModel: UpdateViewModel, navController: NavHostController) {
     updateViewModel.deleteNote(note)

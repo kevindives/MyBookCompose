@@ -9,10 +9,9 @@ import com.magicworld.mybookpremium.repository.NotesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class NotesViewModel : ViewModel() {
+class AddViewModel : ViewModel() {
 
     private val noteRepository = NotesRepository()
-    val readAllData: LiveData<List<Note>> = noteRepository.readAllData
 
     private val _title = MutableLiveData<String>()
     val title: LiveData<String> = _title
@@ -20,16 +19,12 @@ class NotesViewModel : ViewModel() {
     private val _description = MutableLiveData<String>()
     val description: LiveData<String> = _description
 
-    private val _typeView = MutableLiveData<Boolean>()
-    val typeView: LiveData<Boolean> = _typeView
+    private val _color = MutableLiveData<Long>()
+    val color: LiveData<Long> = _color
 
     fun saveNote(title: String, description: String) {
         _title.value = title
         _description.value = description
-    }
-
-    fun saveTypeView(typeView: Boolean){
-        _typeView.value = typeView
     }
 
     fun insertInDatabase(note: Note) {
@@ -38,10 +33,8 @@ class NotesViewModel : ViewModel() {
         }
     }
 
-    fun deleteAllNotes() {
-        viewModelScope.launch(Dispatchers.IO) {
-            noteRepository.deleteAllNotes()
-        }
+    fun saveColor(color: Long) {
+        _color.value = color
     }
 
 

@@ -1,3 +1,5 @@
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+
 package com.magicworld.mybookpremium.ui.list
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -30,35 +32,35 @@ import com.magicworld.mybookpremium.R
 import com.magicworld.mybookpremium.model.Note
 import com.magicworld.mybookpremium.model.Routes.AddView
 import com.magicworld.mybookpremium.model.Routes.UpdateView
-import com.magicworld.mybookpremium.viewmodel.NotesViewModel
+import com.magicworld.mybookpremium.viewmodel.ListViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun ListViewNotes(navController: NavHostController, notesViewModel: NotesViewModel) {
+fun ListViewNotes(navController: NavHostController, listViewModel: ListViewModel) {
 
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
-            TopAppBarListView(notesViewModel) { coroutineScope.launch { scaffoldState.drawerState.open() } }
+            TopAppBarListView(listViewModel) { coroutineScope.launch { scaffoldState.drawerState.open() } }
         },
         floatingActionButton = {
             FloatingListBottom(navController)
         },
         floatingActionButtonPosition = FabPosition.End,
         scaffoldState = scaffoldState,
-        drawerContent = { MyDrawer(notesViewModel) { coroutineScope.launch { scaffoldState.drawerState.close() } } }
+        drawerContent = { MyDrawer(listViewModel) { coroutineScope.launch { scaffoldState.drawerState.close() } } }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            BodyList(notesViewModel, navController)
+            BodyList(listViewModel, navController)
         }
     }
 }
 
 
 @Composable
-fun TopAppBarListView(notesViewModel: NotesViewModel, onClickDrawer: () -> Unit) {
+fun TopAppBarListView(listViewModel: ListViewModel, onClickDrawer: () -> Unit) {
 
     var typeView by rememberSaveable { mutableStateOf(true) }
 
@@ -77,7 +79,7 @@ fun TopAppBarListView(notesViewModel: NotesViewModel, onClickDrawer: () -> Unit)
         actions = {
             IconButton(onClick = {
                 typeView = !typeView
-                notesViewModel.saveTypeView(typeView)
+                listViewModel.saveTypeView(typeView)
             }
             ) {
                 if (typeView) {
@@ -121,11 +123,11 @@ fun FloatingListBottom(navController: NavHostController) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BodyList(notesViewModel: NotesViewModel, navController: NavHostController) {
-    val typeView by notesViewModel.typeView.observeAsState(initial = true)
-    val listNote by notesViewModel.readAllData.observeAsState(listOf())
+fun BodyList(listViewModel: ListViewModel, navController: NavHostController) {
+    val typeView by listViewModel.typeView.observeAsState(initial = true)
+    val listNote by listViewModel.readAllData.observeAsState(listOf())
     if (typeView) {
-        LazyColumn() {
+        LazyColumn{
             items(listNote) { note ->
                 ItemNote(note = note, navController)
             }

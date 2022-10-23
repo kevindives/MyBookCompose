@@ -21,11 +21,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.magicworld.mybookpremium.ui.alertdialog.MyAlertDialog
-import com.magicworld.mybookpremium.viewmodel.NotesViewModel
+import com.magicworld.mybookpremium.viewmodel.ListViewModel
 
 
 @Composable
-fun MyDrawer(notesViewModel: NotesViewModel, onCloseDrawer: () -> Unit) {
+fun MyDrawer(listViewModel: ListViewModel, onCloseDrawer: () -> Unit) {
     var show by rememberSaveable { mutableStateOf(false) }
 
     Column(Modifier.padding(8.dp)) {
@@ -42,7 +42,7 @@ fun MyDrawer(notesViewModel: NotesViewModel, onCloseDrawer: () -> Unit) {
                     "desea eliminar todas tus notas? ",
             show = show,
             onDismiss = { show = false }) {
-            notesViewModel.deleteAllNotes()
+            listViewModel.deleteAllNotes()
             show = false
             onCloseDrawer()
         }

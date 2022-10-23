@@ -19,14 +19,12 @@ class UpdateViewModel: ViewModel() {
     private val _descriptionUpdate = MutableLiveData<String>()
     val descriptionUpdate: LiveData<String> = _descriptionUpdate
 
-    fun saveNoteUpdate(titleUpdate: String, descriptionUpdate: String) {
-        _titleUpdate.value = titleUpdate
-        _descriptionUpdate.value = descriptionUpdate
-    }
+    private val _changeColor = MutableLiveData<Long>()
+    val changedColor: LiveData<Long> = _changeColor
 
-    fun updateItem(updateNote: Note) {
+    fun updateNote(updateNote: Note) {
         viewModelScope.launch(Dispatchers.IO) {
-            noteRepository.updateItem(updateNote)
+            noteRepository.updateNote(updateNote)
         }
     }
 
@@ -34,6 +32,15 @@ class UpdateViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.deleteNote(note)
         }
+    }
+
+    fun saveNoteUpdate(titleUpdate: String, descriptionUpdate: String) {
+        _titleUpdate.value = titleUpdate
+        _descriptionUpdate.value = descriptionUpdate
+    }
+
+    fun saveColor(color: Long) {
+        _changeColor.value = color
     }
 
 

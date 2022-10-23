@@ -4,7 +4,6 @@ import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
@@ -19,117 +18,87 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.magicworld.mybookpremium.core.MyDropDownMenu
 import com.magicworld.mybookpremium.core.hideKeyboard
+import com.magicworld.mybookpremium.model.MyColors
 import com.magicworld.mybookpremium.model.Note
-import com.magicworld.mybookpremium.viewmodel.NotesViewModel
+import com.magicworld.mybookpremium.ui.utils.NoteDescription
+import com.magicworld.mybookpremium.ui.utils.TitleNote
+import com.magicworld.mybookpremium.viewmodel.AddViewModel
 
 @Composable
-fun AddViewNote(navController: NavHostController, notesViewModel: NotesViewModel) {
+fun AddViewNote(navController: NavHostController, addViewModel: AddViewModel) {
 
     Scaffold(
         topBar = {
-            TopAppBarAddView(navController , notesViewModel )
+            TopAppBarAddView(navController, addViewModel)
         },
         floatingActionButtonPosition = FabPosition.End
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            BodyAdd(notesViewModel)
+            BodyAdd(addViewModel)
         }
     }
 
 }
 
 @Composable
-fun TopAppBarAddView(navController: NavHostController, notesViewModel: NotesViewModel) {
+fun TopAppBarAddView(navController: NavHostController, addViewModel: AddViewModel) {
 
-    val title by notesViewModel.title.observeAsState(initial = "")
-    val description by notesViewModel.description.observeAsState(initial = "")
-    val note = Note(id = 0, title, description)
+    val note = getNote(addViewModel)
+    var showMenu by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
-    val activity =  LocalContext.current as Activity
+    val activity = LocalContext.current as Activity
 
     TopAppBar(
         title = { Text(text = "") },
-        backgroundColor = Color.White,
+        backgroundColor = Color.Transparent,
         elevation = 0.dp,
         navigationIcon = {
             IconButton(onClick = {
-                notesViewModel.insertInDatabase(note)
+                addViewModel.insertInDatabase(note)
                 navController.navigateUp()
-                hideKeyboard(context , activity)
+                hideKeyboard(context, activity)
             }
             ) {
                 Icon(Icons.Outlined.ArrowBackIosNew, null, tint = Color.Black)
             }
         },
         actions = {
-            IconButton(onClick = { }) {
+            IconButton(onClick = { showMenu = true }) {
                 Icon(Icons.Outlined.Palette, null, tint = Color.DarkGray)
             }
 
         })
+    MyDropDownMenu(showMenu,
+        onColorSelected = { addViewModel.saveColor(it)},
+        onDismissMenu = { showMenu = false })
+
 }
 
 @Composable
-fun BodyAdd(notesViewModel: NotesViewModel) {
+fun getNote(addViewModel: AddViewModel): Note {
+    val title by addViewModel.title.observeAsState(initial = "")
+    val description by addViewModel.description.observeAsState(initial = "")
+    val color by addViewModel.color.observeAsState(initial = MyColors.White.color)
+
+    return Note(id = 0, title = title, description = description, color)
+}
+
+@Composable
+fun BodyAdd(addViewModel: AddViewModel) {
 
     var title by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
 
-    notesViewModel.saveNote(title , description)
+    addViewModel.saveNote(title, description)
 
     Column(Modifier.fillMaxSize()) {
-        TitleNote(title) { title = it}
-        NoteDescription(description) {description = it}
+        TitleNote(title) { title = it }
+        NoteDescription(description) { description = it }
     }
 }
 
-@Composable
-fun TitleNote(title: String, onTextChanged: (String) -> Unit) {
-
-    TextField(
-        value = title,
-        onValueChange = { onTextChanged(it) },
-        modifier = Modifier
-            .fillMaxWidth(),
-        placeholder = { MyText(text = "Título") },
-        maxLines = 1,
-        singleLine = true,
-        colors = TextFieldDefaults.textFieldColors(
-            placeholderColor = Color(0xFFB2B2B2),
-            backgroundColor = Color.White,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-
-            )
-    )
-}
-
-@Composable
-fun NoteDescription(note: String, onTextChanged: (String) -> Unit) {
-
-    TextField(
-        value = note,
-        onValueChange = { onTextChanged(it) },
-        modifier = Modifier
-            .fillMaxSize(),
-        placeholder = { Text("Note") },
-        colors = TextFieldDefaults.textFieldColors(
-            placeholderColor = Color(0xFFB2B2B2),
-            backgroundColor = Color.White,
-            focusedIndicatorColor = Color.White,
-            unfocusedIndicatorColor = Color.White
-
-        )
-    )
-}
-
-
-@Composable
-fun MyText(text: String) {
-    Text(text = text, fontSize = 20.sp)
-}
 
 
