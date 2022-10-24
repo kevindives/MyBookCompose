@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.magicworld.mybookpremium.core.MyDropDownMenu
 import com.magicworld.mybookpremium.core.hideKeyboard
-import com.magicworld.mybookpremium.model.MyColors
+import com.magicworld.mybookpremium.model.MyColors.White
 import com.magicworld.mybookpremium.model.Note
 import com.magicworld.mybookpremium.ui.utils.NoteDescription
 import com.magicworld.mybookpremium.ui.utils.TitleNote
@@ -30,11 +30,14 @@ import com.magicworld.mybookpremium.viewmodel.AddViewModel
 @Composable
 fun AddViewNote(navController: NavHostController, addViewModel: AddViewModel) {
 
+    var colorSaved by rememberSaveable { mutableStateOf(White.color) }
+
     Scaffold(
         topBar = {
-            TopAppBarAddView(navController, addViewModel)
+            TopAppBarAddView(navController, addViewModel) { color -> colorSaved = color}
         },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = FabPosition.End,
+        backgroundColor = Color(colorSaved)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             BodyAdd(addViewModel)
@@ -44,9 +47,14 @@ fun AddViewNote(navController: NavHostController, addViewModel: AddViewModel) {
 }
 
 @Composable
-fun TopAppBarAddView(navController: NavHostController, addViewModel: AddViewModel) {
+fun TopAppBarAddView(
+    navController: NavHostController,
+    addViewModel: AddViewModel,
+    saveColor: (Long) -> Unit,
+) {
 
-    val note = getNote(addViewModel)
+    var colorSelected by rememberSaveable { mutableStateOf(White.color) }
+    val note = getNote(addViewModel, colorSelected)
     var showMenu by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val activity = LocalContext.current as Activity
@@ -72,16 +80,18 @@ fun TopAppBarAddView(navController: NavHostController, addViewModel: AddViewMode
 
         })
     MyDropDownMenu(showMenu,
-        onColorSelected = { addViewModel.saveColor(it)},
+        onColorSelected = { color ->
+            colorSelected = color
+            saveColor(color)
+        },
         onDismissMenu = { showMenu = false })
 
 }
 
 @Composable
-fun getNote(addViewModel: AddViewModel): Note {
+fun getNote(addViewModel: AddViewModel, color: Long = White.color): Note {
     val title by addViewModel.title.observeAsState(initial = "")
     val description by addViewModel.description.observeAsState(initial = "")
-    val color by addViewModel.color.observeAsState(initial = MyColors.White.color)
 
     return Note(id = 0, title = title, description = description, color)
 }

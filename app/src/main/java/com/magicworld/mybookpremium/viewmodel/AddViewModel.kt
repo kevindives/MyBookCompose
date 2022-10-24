@@ -19,9 +19,6 @@ class AddViewModel : ViewModel() {
     private val _description = MutableLiveData<String>()
     val description: LiveData<String> = _description
 
-    private val _color = MutableLiveData<Long>()
-    val color: LiveData<Long> = _color
-
     fun saveNote(title: String, description: String) {
         _title.value = title
         _description.value = description
@@ -32,11 +29,6 @@ class AddViewModel : ViewModel() {
             noteRepository.insertInDatabase(note)
         }
     }
-
-    fun saveColor(color: Long) {
-        _color.value = color
-    }
-
 
 }
 

@@ -19,9 +19,6 @@ class UpdateViewModel: ViewModel() {
     private val _descriptionUpdate = MutableLiveData<String>()
     val descriptionUpdate: LiveData<String> = _descriptionUpdate
 
-    private val _changeColor = MutableLiveData<Long>()
-    val changedColor: LiveData<Long> = _changeColor
-
     fun updateNote(updateNote: Note) {
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.updateNote(updateNote)
@@ -38,10 +35,5 @@ class UpdateViewModel: ViewModel() {
         _titleUpdate.value = titleUpdate
         _descriptionUpdate.value = descriptionUpdate
     }
-
-    fun saveColor(color: Long) {
-        _changeColor.value = color
-    }
-
 
 }

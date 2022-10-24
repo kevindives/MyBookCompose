@@ -52,7 +52,7 @@ fun ListViewNotes(navController: NavHostController, listViewModel: ListViewModel
         scaffoldState = scaffoldState,
         drawerContent = { MyDrawer(listViewModel) { coroutineScope.launch { scaffoldState.drawerState.close() } } }
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().padding(bottom = 16.dp)) {
             BodyList(listViewModel, navController)
         }
     }

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.magicworld.mybookpremium.core.MyDropDownMenu
 import com.magicworld.mybookpremium.core.hideKeyboard
-import com.magicworld.mybookpremium.model.MyColors
+import com.magicworld.mybookpremium.model.MyColors.White
 import com.magicworld.mybookpremium.model.Note
 import com.magicworld.mybookpremium.ui.alertdialog.MyAlertDialog
 import com.magicworld.mybookpremium.ui.utils.NoteDescription
@@ -32,12 +32,16 @@ import com.magicworld.mybookpremium.viewmodel.UpdateViewModel
 @Composable
 fun UpdateViewNote(navController: NavHostController, updateViewModel: UpdateViewModel, note: Note) {
 
+    var colorSaved by rememberSaveable { mutableStateOf(White.color) }
+
     Scaffold(
         topBar = {
-            TopAppBarUpdateView(navController, updateViewModel, note)
+            TopAppBarUpdateView(navController, updateViewModel, note) { color ->
+                colorSaved = color
+            }
         },
         floatingActionButtonPosition = FabPosition.End,
-        backgroundColor = Color(note.color)
+        backgroundColor = selectColor(note.color, colorSaved)
     ) {
         Box {
             BodyUpdate(note, updateViewModel)
@@ -46,13 +50,23 @@ fun UpdateViewNote(navController: NavHostController, updateViewModel: UpdateView
 
 }
 
+fun selectColor(color: Long, colorSaved: Long): Color {
+    return if (colorSaved == White.color) Color(color) else Color(colorSaved)
+}
+
 @Composable
 fun TopAppBarUpdateView(
     navController: NavHostController,
     updateViewModel: UpdateViewModel,
     note: Note,
+    saveColor: (Long) -> Unit,
 ) {
-    val updateNote = getUpdateNote(updateViewModel, note)
+    var colorSelected by rememberSaveable { mutableStateOf(White.color) }
+    val updateNote = if (colorSelected != White.color) {
+        updateNoteWithColor(updateViewModel = updateViewModel, note =  note, color = colorSelected )
+    } else {
+        getUpdateNote( updateViewModel, note)
+    }
     var showDialog by rememberSaveable { mutableStateOf(false) }
     var showMenu by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
@@ -91,19 +105,29 @@ fun TopAppBarUpdateView(
     }
 
     MyDropDownMenu(showMenu,
-        onColorSelected = { updateViewModel.saveColor(it) },
+        onColorSelected = { color ->
+            colorSelected = color
+            saveColor(color)
+        },
         onDismissMenu = { showMenu = false })
 }
 
 
 @Composable
-fun getUpdateNote(updateViewModel: UpdateViewModel, note: Note): Note {
+fun getUpdateNote( updateViewModel: UpdateViewModel, note: Note): Note {
 
     val titleUpdate by updateViewModel.titleUpdate.observeAsState(initial = "")
     val descriptionUpdate by updateViewModel.descriptionUpdate.observeAsState(initial = "")
-    val changedColor by updateViewModel.changedColor.observeAsState(initial = MyColors.White.color)
-    return Note(note.id, titleUpdate, descriptionUpdate, changedColor)
 
+    return Note(note.id, titleUpdate, descriptionUpdate , note.color)
+}
+
+@Composable
+fun updateNoteWithColor(updateViewModel: UpdateViewModel, note: Note, color: Long): Note{
+    val titleUpdate by updateViewModel.titleUpdate.observeAsState(initial = "")
+    val descriptionUpdate by updateViewModel.descriptionUpdate.observeAsState(initial = "")
+
+    return Note(note.id, titleUpdate, descriptionUpdate , color)
 }
 
 @Composable
