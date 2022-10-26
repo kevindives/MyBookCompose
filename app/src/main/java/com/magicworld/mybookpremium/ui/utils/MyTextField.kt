@@ -12,10 +12,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun TitleNote(titleUpdate: String, onTextChanged: (String) -> Unit) {
+fun TitleNote(title: String, onTextChanged: (String) -> Unit) {
 
     TextField(
-        value = titleUpdate,
+        value = title,
         onValueChange = { onTextChanged(it) },
         modifier = Modifier
             .fillMaxWidth(),
@@ -34,10 +34,10 @@ fun TitleNote(titleUpdate: String, onTextChanged: (String) -> Unit) {
 }
 
 @Composable
-fun NoteDescription(descriptionUpdate: String, onTextChanged: (String) -> Unit) {
+fun NoteDescription(description: String, onTextChanged: (String) -> Unit) {
 
     TextField(
-        value = descriptionUpdate,
+        value = description,
         onValueChange = { onTextChanged(it) },
         modifier = Modifier
             .fillMaxSize(),

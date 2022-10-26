@@ -3,6 +3,7 @@ package com.magicworld.mybookpremium.model
  sealed class MyColors(val color: Long){
      object White: MyColors(0xFFFFFFFF)
      object AliceAzul: MyColors(0xFFF0F8FF)
+     object AzulClaro: MyColors(0xFFADD8E6)
      object RosaBrumosa: MyColors(0xFFFFE4E1)
      object Mocasin: MyColors(0xFFFFE4B5)
      object BlancoAntiguo: MyColors(0xFFFAEBD7)

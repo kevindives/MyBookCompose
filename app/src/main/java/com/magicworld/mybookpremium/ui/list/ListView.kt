@@ -2,6 +2,7 @@
 
 package com.magicworld.mybookpremium.ui.list
 
+import android.app.Activity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -24,22 +25,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.magicworld.mybookpremium.R
+import com.magicworld.mybookpremium.model.MyColors.*
 import com.magicworld.mybookpremium.model.Note
 import com.magicworld.mybookpremium.model.Routes.AddView
 import com.magicworld.mybookpremium.model.Routes.UpdateView
 import com.magicworld.mybookpremium.viewmodel.ListViewModel
 import kotlinx.coroutines.launch
 
+
 @Composable
 fun ListViewNotes(navController: NavHostController, listViewModel: ListViewModel) {
 
+    val activity = LocalContext.current as Activity
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
+
 
     Scaffold(
         topBar = {
@@ -52,7 +58,10 @@ fun ListViewNotes(navController: NavHostController, listViewModel: ListViewModel
         scaffoldState = scaffoldState,
         drawerContent = { MyDrawer(listViewModel) { coroutineScope.launch { scaffoldState.drawerState.close() } } }
     ) {
-        Box(modifier = Modifier.fillMaxSize().padding(bottom = 16.dp)) {
+        activity.window.statusBarColor = White.color.toInt()
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 16.dp)) {
             BodyList(listViewModel, navController)
         }
     }
@@ -66,7 +75,7 @@ fun TopAppBarListView(listViewModel: ListViewModel, onClickDrawer: () -> Unit) {
 
     TopAppBar(
         title = { ListTitle() },
-        backgroundColor = Color(0xFFE6E6FA),
+        backgroundColor = Color(AzulClaro.color),
         modifier = Modifier
             .padding(13.dp)
             .clip(RoundedCornerShape(100)),

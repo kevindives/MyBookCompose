@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.magicworld.mybookpremium.core.MyDropDownMenu
+import com.magicworld.mybookpremium.ui.utils.MyDropDownMenu
 import com.magicworld.mybookpremium.core.hideKeyboard
 import com.magicworld.mybookpremium.model.MyColors.White
 import com.magicworld.mybookpremium.model.Note
@@ -31,8 +31,9 @@ import com.magicworld.mybookpremium.viewmodel.UpdateViewModel
 
 @Composable
 fun UpdateViewNote(navController: NavHostController, updateViewModel: UpdateViewModel, note: Note) {
-
+    val activity = LocalContext.current as Activity
     var colorSaved by rememberSaveable { mutableStateOf(White.color) }
+    activity.window.statusBarColor = selectColor(note.color, colorSaved).toInt()
 
     Scaffold(
         topBar = {
@@ -41,7 +42,7 @@ fun UpdateViewNote(navController: NavHostController, updateViewModel: UpdateView
             }
         },
         floatingActionButtonPosition = FabPosition.End,
-        backgroundColor = selectColor(note.color, colorSaved)
+        backgroundColor = Color(selectColor(note.color, colorSaved))
     ) {
         Box {
             BodyUpdate(note, updateViewModel)
@@ -50,8 +51,8 @@ fun UpdateViewNote(navController: NavHostController, updateViewModel: UpdateView
 
 }
 
-fun selectColor(color: Long, colorSaved: Long): Color {
-    return if (colorSaved == White.color) Color(color) else Color(colorSaved)
+fun selectColor(colorNote: Long, colorSaved: Long): Long {
+    return if (colorSaved == White.color) colorNote else colorSaved
 }
 
 @Composable
@@ -71,6 +72,7 @@ fun TopAppBarUpdateView(
     var showMenu by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val activity = LocalContext.current as Activity
+    //activity.window.statusBarColor = colorSelected.toInt()
 
     TopAppBar(
         title = { Text(text = "") },

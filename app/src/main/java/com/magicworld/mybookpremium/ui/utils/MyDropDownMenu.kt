@@ -1,4 +1,4 @@
-package com.magicworld.mybookpremium.core
+package com.magicworld.mybookpremium.ui.utils
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll

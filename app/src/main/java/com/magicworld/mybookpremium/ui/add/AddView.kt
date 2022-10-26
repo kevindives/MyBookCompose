@@ -19,10 +19,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.magicworld.mybookpremium.core.MyDropDownMenu
 import com.magicworld.mybookpremium.core.hideKeyboard
 import com.magicworld.mybookpremium.model.MyColors.White
 import com.magicworld.mybookpremium.model.Note
+import com.magicworld.mybookpremium.ui.utils.MyDropDownMenu
 import com.magicworld.mybookpremium.ui.utils.NoteDescription
 import com.magicworld.mybookpremium.ui.utils.TitleNote
 import com.magicworld.mybookpremium.viewmodel.AddViewModel
@@ -34,7 +34,7 @@ fun AddViewNote(navController: NavHostController, addViewModel: AddViewModel) {
 
     Scaffold(
         topBar = {
-            TopAppBarAddView(navController, addViewModel) { color -> colorSaved = color}
+            TopAppBarAddView(navController, addViewModel) { color -> colorSaved = color }
         },
         floatingActionButtonPosition = FabPosition.End,
         backgroundColor = Color(colorSaved)
@@ -58,6 +58,7 @@ fun TopAppBarAddView(
     var showMenu by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val activity = LocalContext.current as Activity
+    activity.window.statusBarColor = colorSelected.toInt()
 
     TopAppBar(
         title = { Text(text = "") },
